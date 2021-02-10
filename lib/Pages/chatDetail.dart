@@ -1,10 +1,20 @@
 import 'dart:math';
 
+import 'package:chat_chat/Provider/signalRProvider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class DetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    SignalRProvider provider = Provider.of<SignalRProvider>(context);
+    if (provider == null || provider.conn == null || provider.connId == null) {
+      return Container(
+        color: Colors.white,
+        child: Center(child: CircularProgressIndicator()),
+      );
+    }
+    TextEditingController textController = TextEditingController();
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -21,7 +31,26 @@ class DetailPage extends StatelessWidget {
           ),
         ],
       ),
-      body: ChatDetailList(),
+      body: ChatDetailList(
+        provider: provider,
+      ),
+      bottomNavigationBar: Container(
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+                child: TextField(
+              controller: textController,
+            )),
+            ElevatedButton(
+              onPressed: () {
+                provider.sendMessage(textController.text);
+              },
+              child: Text('Send'),
+            )
+          ],
+        ),
+      ),
     );
   }
 }
@@ -34,33 +63,15 @@ class ChatRecord {
 }
 
 class ChatDetailList extends StatelessWidget {
+  final SignalRProvider provider;
+  ChatDetailList({@required this.provider});
+
   @override
   Widget build(BuildContext context) {
     String avt1 = 'https://pic4.zhimg.com/da8e974dc_is.jpg';
     String avt2 =
         'https://pic4.zhimg.com/v2-0edac6fcc7bf69f6da105fe63268b84c_is.jpg';
-
-    List<ChatRecord> records = [];
-    records.add(
-      ChatRecord(
-          sender: 0, content: 'Hi, how' 're you doing?', avatarUrl: avt1),
-    );
-    records.add(
-      ChatRecord(sender: 1, content: 'Good, how' 're you?', avatarUrl: avt2),
-    );
-    records.add(
-      ChatRecord(
-          sender: 0,
-          content: 'Could you borrow me some money？😭',
-          avatarUrl: avt1),
-    );
-    records.add(
-      ChatRecord(
-          sender: 1,
-          content: 'I, uh, I have'
-              'I have better things to do',
-          avatarUrl: avt2),
-    );
+    List<ChatRecord> records = provider.chats;
     return ListView.builder(
       itemCount: records.length,
       itemBuilder: (context, index) {

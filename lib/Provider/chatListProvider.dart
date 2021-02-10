@@ -9,8 +9,8 @@ class ChatListProvider with ChangeNotifier {
   List<UserModel> users;
 
   ChatListProvider() {
-    chats = List<ChatContentModel>();
-    users = List<UserModel>();
+    chats = [];
+    users = [];
     data.forEach((element) {
       users.add(UserModel(
           userId: element['id'],
@@ -22,7 +22,7 @@ class ChatListProvider with ChangeNotifier {
     users =
         users.getRange(5, users.length >= 50 ? 49 : users.length - 1).toList();
     users.forEach((element) {
-      List<UserModel> userIds = List<UserModel>();
+      List<UserModel> userIds = [];
       userIds.add(element);
       chats.add(ChatContentModel(
           isRead: false,

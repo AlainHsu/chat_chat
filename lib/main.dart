@@ -1,10 +1,34 @@
+import 'dart:io';
+
 import 'package:chat_chat/Pages/chatDetail.dart';
 import 'package:chat_chat/Provider/chatListProvider.dart';
+import 'package:chat_chat/Provider/signalRProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+  }
+}
+
 void main() {
-  runApp(MyApp());
+  HttpOverrides.global = new MyHttpOverrides();
+
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => SignalRProvider(),
+          lazy: false,
+        ),
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
