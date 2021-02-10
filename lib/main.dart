@@ -1,3 +1,4 @@
+import 'package:chat_chat/Pages/chatDetail.dart';
 import 'package:chat_chat/Provider/chatListProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -74,24 +75,39 @@ class ChatList extends StatelessWidget {
     if (provider == null) {
       return Center(child: CircularProgressIndicator());
     }
+    ScrollController controller = ScrollController();
 
-    return ListView.builder(
-      shrinkWrap: true,
-      itemCount: provider.chats.length,
-      itemBuilder: (BuildContext context, int index) {
-        return Column(
-          children: [
-            ListTile(
-              leading:
-                  Image.network(provider.chats[index].userIds[0].avatarUrl),
-              title: Text(provider.chats[index].userIds[0].userName),
-              subtitle: Text(provider.chats[index].lastContent),
-              trailing: Text(provider.chats[index].lastUpdateTime),
-            ),
-            Divider()
-          ],
-        );
-      },
+    return SingleChildScrollView(
+      controller: controller,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ListView.builder(
+            shrinkWrap: true,
+            itemCount: provider.chats.length,
+            itemBuilder: (BuildContext context, int index) {
+              return Column(
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => DetailPage()));
+                    },
+                    child: ListTile(
+                      leading: Image.network(
+                          provider.chats[index].userIds[0].avatarUrl),
+                      title: Text(provider.chats[index].userIds[0].userName),
+                      subtitle: Text(provider.chats[index].lastContent),
+                      trailing: Text(provider.chats[index].lastUpdateTime),
+                    ),
+                  ),
+                  Divider()
+                ],
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 }
