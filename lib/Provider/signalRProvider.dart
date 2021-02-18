@@ -31,7 +31,7 @@ class SignalRProvider with ChangeNotifier {
 
     conn = HubConnectionBuilder()
         .withUrl(
-            'https://192.168.2.1:5001/chatHub',
+            'https://192.168.2.1:5001/chatHub', // update the domain to your local address (check with 'ifconfig' in terminal)
             HttpConnectionOptions(
               withCredentials: false,
               logging: (level, message) => print(message),
