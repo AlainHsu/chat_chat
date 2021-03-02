@@ -16,22 +16,30 @@ class SignalRProvider with ChangeNotifier {
 
   SignalRProvider() {
     chats.add(ChatRecord(
-        sender: 0, content: 'Hi, how' 're you doing?', avatarUrl: avt1));
-    chats.add(
-        ChatRecord(sender: 1, content: 'Good, how' 're you?', avatarUrl: avt2));
+        sender: 0,
+        content: 'Hi, how' 're you doing?',
+        avatarUrl: avt1,
+        chatType: ChatType.text));
+    chats.add(ChatRecord(
+        sender: 1,
+        content: 'Good, how' 're you?',
+        avatarUrl: avt2,
+        chatType: ChatType.text));
     chats.add(ChatRecord(
         sender: 0,
         content: 'Could you borrow me some money？😭',
-        avatarUrl: avt1));
+        avatarUrl: avt1,
+        chatType: ChatType.text));
     chats.add(ChatRecord(
         sender: 1,
         content: 'I, uh, I have'
             'I have better things to do',
-        avatarUrl: avt2));
+        avatarUrl: avt2,
+        chatType: ChatType.text));
 
     conn = HubConnectionBuilder()
         .withUrl(
-            'https://192.168.2.1:5001/chatHub', // update the domain to your local address (check with 'ifconfig' in terminal)
+            'https://192.168.50.50:5001/chatHub', // update the domain to your local address (check with 'ifconfig' in terminal)
             HttpConnectionOptions(
               withCredentials: false,
               logging: (level, message) => print(message),

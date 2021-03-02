@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:chat_chat/Provider/signalRProvider.dart';
+import 'package:chat_chat/Provider/voiceRecordProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -16,50 +17,93 @@ class DetailPage extends StatelessWidget {
     }
     TextEditingController textController = TextEditingController();
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        title: Text('ABC'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.more_horiz),
-            onPressed: () {},
+        appBar: AppBar(
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.pop(context);
+            },
           ),
-        ],
-      ),
-      body: ChatDetailList(
-        provider: provider,
-      ),
-      bottomNavigationBar: Container(
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Flexible(
-                child: TextField(
-              controller: textController,
-            )),
-            ElevatedButton(
-              onPressed: () {
-                provider.sendMessage(textController.text);
-              },
-              child: Text('Send'),
+          title: Text('ABC'),
+          actions: [
+            IconButton(
+              icon: Icon(Icons.more_horiz),
+              onPressed: () {},
+            ),
+          ],
+        ),
+        body: ChatDetailList(
+          provider: provider,
+        ),
+        bottomNavigationBar: MultiProvider(
+          providers: [
+            ChangeNotifierProvider(
+              create: (_) => VoiceRecordProvider(),
             )
           ],
+          child: RecordVoiceRow(),
+        )
+        // Container(
+        //   child: Row(
+        //     mainAxisSize: MainAxisSize.min,
+        //     children: [
+        //       Flexible(
+        //           child: TextField(
+        //         controller: textController,
+        //       )),
+        //       ElevatedButton(
+        //         onPressed: () {
+        //           provider.sendMessage(textController.text);
+        //         },
+        //         child: Text('Send'),
+        //       )
+        //     ],
+        //   ),
+        // ),
+        );
+  }
+}
+
+class RecordVoiceRow extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    VoiceRecordProvider provider = Provider.of<VoiceRecordProvider>(context);
+    bool ifTap = provider.ifTap;
+    return GestureDetector(
+      onTapDown: (result) {
+        provider.beginRecord();
+      },
+      onTapCancel: () {
+        provider.cancelRecord();
+      },
+      onTapUp: (result) {
+        provider.stopRecord();
+      },
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        height: 100,
+        color: ifTap ? Colors.grey[600] : Colors.grey[200],
+        child: Center(
+          child: Text('Record'),
         ),
       ),
     );
   }
 }
 
+enum ChatType {
+  text,
+  voice,
+  image,
+  video,
+}
+
 class ChatRecord {
   int sender;
   String content;
   String avatarUrl;
-  ChatRecord({this.sender, this.content, this.avatarUrl});
+  ChatType chatType;
+  ChatRecord({this.sender, this.content, this.avatarUrl, this.chatType});
 }
 
 class ChatDetailList extends StatelessWidget {
@@ -75,10 +119,17 @@ class ChatDetailList extends StatelessWidget {
     return ListView.builder(
       itemCount: records.length,
       itemBuilder: (context, index) {
-        return ChatRow(
-            sender: records[index].sender,
-            content: records[index].content,
-            avatarUrl: records[index].avatarUrl);
+        switch (records[index].chatType) {
+          case ChatType.text:
+            return ChatRow(
+                sender: records[index].sender,
+                content: records[index].content,
+                avatarUrl: records[index].avatarUrl);
+          case ChatType.voice:
+            return null; // TODO: TBD
+        }
+
+        return Container();
       },
     );
   }
